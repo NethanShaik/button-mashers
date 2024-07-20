@@ -23,7 +23,6 @@ class CartActivity : AppCompatActivity() {
         setSupportActionBar(toolbar) // Set the toolbar as the support action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
         supportActionBar?.setDisplayShowTitleEnabled(true) // Show title
-        supportActionBar?.title = "Shopping Cart"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
