@@ -13,12 +13,15 @@ import androidx.core.view.WindowInsetsCompat
 class ItemActivity : AppCompatActivity() {
     private lateinit var textViewQuantity: TextView
     private lateinit var iconDecrease : ImageButton
+    private lateinit var textViewPrice : TextView
     private var number: Int = 1
+    private var price: Double = 20.0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_item)
         val iconIncrease : ImageButton = findViewById(R.id.iconIncrease)
+        textViewPrice = findViewById(R.id.textViewPrice)
         textViewQuantity = findViewById(R.id.textViewQuantity)
         iconDecrease = findViewById(R.id.iconDecrease)
         iconDecrease.isEnabled = false// Disable decrease button initially
@@ -35,11 +38,13 @@ class ItemActivity : AppCompatActivity() {
         iconIncrease.setOnClickListener{
             number++// Increase number quantity
             updateNumber()
+            updatePrice()
         }
 
         iconDecrease.setOnClickListener{
             number--// Decrease number quantity
             updateNumber()
+            updatePrice()
         }
     }
 
@@ -58,5 +63,10 @@ class ItemActivity : AppCompatActivity() {
         // Update the text view with the current quantity
         textViewQuantity.text = number.toString()
         iconDecrease.isEnabled = number > 1// Disable decrease button if number is 1
+    }
+    private fun updatePrice() {
+        price = number * 20.0
+        textViewPrice.text = "$$price"
+
     }
 }
