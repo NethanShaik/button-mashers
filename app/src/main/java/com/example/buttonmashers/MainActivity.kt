@@ -2,12 +2,19 @@ package com.example.buttonmashers
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,11 +39,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val itemBtn = findViewById<Button>(R.id.item_btn)
-        itemBtn.setOnClickListener {
-            val intent = Intent(this, ItemActivity::class.java)
-            startActivity(intent)
-        }
+//        val itemBtn = findViewById<Button>(R.id.item_btn)
+//        itemBtn.setOnClickListener {
+//            val intent = Intent(this, ItemActivity::class.java)
+//            startActivity(intent)
+//        }
 
         val games = listOf(
             Game(id = 1, title = "The Legend of Adventure", description = "An epic quest in a magical world.", releaseDate = "2021-04-15", price = 59.99, categoryId = 1, imagePath = "path/to/image1.jpg"),
@@ -49,5 +56,33 @@ class MainActivity : AppCompatActivity() {
             Game(id = 8, title = "Puzzle Master", description = "Challenging puzzles and brain teasers.", releaseDate = "2018-12-25", price = 14.99, categoryId = 8, imagePath = "path/to/image8.jpg"),
             Game(id = 9, title = "Battle Royale", description = "Fight to be the last one standing in this battle royale game.", releaseDate = "2021-07-07", price = 39.99, categoryId = 9, imagePath = "path/to/image9.jpg")
         )
+
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
+        recyclerView.adapter = GameAdapter(games)
     }
+}
+
+class GameAdapter(private val games: List<Game>) : RecyclerView.Adapter<GameAdapter.GameViewHolder>() {
+
+    class GameViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val gameImage: ImageView = view.findViewById(R.id.game_image)
+        val gameTitle: TextView = view.findViewById(R.id.game_title)
+        val gamePrice: TextView = view.findViewById(R.id.game_price)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_game, parent, false)
+        return GameViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: GameViewHolder, position: Int) {
+        val game = games[position]
+        // Load image using an image loading library like Glide or Picasso
+        // Glide.with(holder.gameImage.context).load(game.imagePath).into(holder.gameImage)
+        holder.gameTitle.text = game.title
+        holder.gamePrice.text = "$${game.price}"
+    }
+
+    override fun getItemCount() = games.size
 }
