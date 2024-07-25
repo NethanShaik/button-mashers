@@ -12,12 +12,28 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class CartActivity : AppCompatActivity() {
-    fun increase_quantity(quantity: Int): Int {
-        return quantity + 1
+
+    private lateinit var quantity: TextView
+    private lateinit var price: TextView
+    private lateinit var increase: ImageButton
+    private lateinit var decrease: ImageButton
+    private var quant: Int = 1
+    private var updatedPrice: Double = 50.0
+
+    fun increase_quantity() {
+        quant ++
+        quantity.text = quant.toString()
+        updatedPrice =  quant * 50.0
+        price.text = updatedPrice.toString()
+        decrease.isEnabled = quant > 1
     }
 
-    fun decrease_quantity(quantity: Int): Int {
-        return quantity - 1
+    fun decrease_quantity(){
+        quant --
+        quantity.text = quant.toString()
+        updatedPrice =  quant * 50.0
+        price.text = updatedPrice.toString()
+        decrease.isEnabled = quant > 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,29 +47,22 @@ class CartActivity : AppCompatActivity() {
 
         }
 
+        quantity = findViewById(R.id.quantity)
+        price = findViewById(R.id.price)
+        increase = findViewById(R.id.increase)
+        decrease = findViewById(R.id.decrease)
+        decrease.isEnabled = false
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar) // Set the toolbar as the support action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
         supportActionBar?.setDisplayShowTitleEnabled(true) // Show title
 
-        val quantity: EditText = findViewById(R.id.quantity)
-        val price: TextView = findViewById(R.id.price)
-        val increase: ImageButton = findViewById(R.id.increase)
-        val decrease: ImageButton = findViewById(R.id.decrease)
-
         increase.setOnClickListener {
-
-            val quant: Int = quantity.text.toString().toIntOrNull() ?: 0
-            val increased_value = increase_quantity(quant)
-            quantity.setText(increased_value.toString())
-
+            increase_quantity()
         }
 
         decrease.setOnClickListener {
-
-            val quant: Int = quantity.text.toString().toIntOrNull() ?: 0
-            val decreased_value = decrease_quantity(quant)
-            quantity.setText(decreased_value.toString())
+            decrease_quantity()
 
         }
 
