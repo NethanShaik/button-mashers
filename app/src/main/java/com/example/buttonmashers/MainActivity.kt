@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -66,12 +68,18 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
             { fileName -> resources.getIdentifier(fileName, "drawable", packageName) }
         )
 
+        // Populate game list with games.
         val games = dbHelper.getAllGames()
-        val categories = dbHelper.getAllCategories()
-
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
         recyclerView.adapter = GameAdapter(games, this)
+
+        // Populate category spinner with categories.
+        val categories = dbHelper.getAllCategories()
+        val categorySpinner = findViewById<Spinner>(R.id.category_spinner)
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        categorySpinner.adapter = categoryAdapter
     }
 
     override fun onGameClick(game: Game) {

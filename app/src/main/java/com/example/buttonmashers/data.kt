@@ -13,7 +13,11 @@ data class Game(
 data class Category(
     val id: Int,
     val name: String
-)
+) {
+    override fun toString(): String {
+        return name
+    }
+}
 
 data class Order(
     val id: Int,
