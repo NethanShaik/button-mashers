@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -61,7 +60,12 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         // Copy the database from assets into the app's internal storage.
         copyDatabaseFromAssets(this, overwrite = true)
 
-        dbHelper = GameDatabaseHelper(this)
+        // Setup DB helper.
+        dbHelper = GameDatabaseHelper(
+            this,
+            { fileName -> resources.getIdentifier(fileName, "drawable", packageName) }
+        )
+
         val games = dbHelper.getAllGames()
         val categories = dbHelper.getAllCategories()
 
@@ -78,6 +82,7 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         intent.putExtra("gameReleaseDate", game.releaseDate)
         intent.putExtra("gamePrice", game.price)
         intent.putExtra("gameCategoryId", game.categoryId)
+        intent.putExtra("gameImageResId", game.imageResId)
         startActivity(intent)
     }
 }
@@ -106,6 +111,11 @@ class GameAdapter(
         val game = games[position]
         holder.gameTitle.text = game.title
         holder.gamePrice.text = "$${game.price}"
+
+        if (game.imageResId != 0) {
+            holder.gameImage.setImageResource(game.imageResId)
+        }
+
         holder.itemView.setOnClickListener {
             listener.onGameClick(game)
         }

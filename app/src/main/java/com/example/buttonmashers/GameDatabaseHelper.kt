@@ -4,7 +4,10 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class GameDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
+class GameDatabaseHelper(
+    context: Context,
+    private val fileNameToIdConverter: (String) -> Int
+) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
     companion object {
         private const val DB_NAME = "gamestore.db"
@@ -32,7 +35,7 @@ class GameDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
                 val price = getDouble(getColumnIndexOrThrow("price"))
                 val categoryId = getInt(getColumnIndexOrThrow("category_id"))
                 val imagePath = getString(getColumnIndexOrThrow("image_path"))
-                games.add(Game(id, title, description, releaseDate, price, categoryId, imagePath))
+                games.add(Game(id, title, description, releaseDate, price, categoryId, fileNameToIdConverter(imagePath)))
             }
             close()
         }

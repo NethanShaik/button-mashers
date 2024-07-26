@@ -7,7 +7,7 @@ data class Game(
     val releaseDate: String,
     val price: Double,
     val categoryId: Int,
-    val imagePath: String? = null
+    val imageResId: Int
 )
 
 data class Category(
