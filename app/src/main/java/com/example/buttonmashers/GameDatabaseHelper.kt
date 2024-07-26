@@ -38,4 +38,20 @@ class GameDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
         }
         return games
     }
+
+    fun getAllCategories(): List<Category> {
+        val categories = mutableListOf<Category>()
+        val db = readableDatabase
+        val cursor = db.query("categories", null, null, null, null, null, null)
+
+        with(cursor) {
+            while (moveToNext()) {
+                val id = getInt(getColumnIndexOrThrow("id"))
+                val name = getString(getColumnIndexOrThrow("name"))
+                categories.add(Category(id, name))
+            }
+            close()
+        }
+        return categories
+    }
 }
