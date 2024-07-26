@@ -17,10 +17,10 @@ data class Category(
 
 data class Order(
     val id: Int,
+    val displayedOrderId: String,
     val totalPrice: Double,
     val orderDate: String,
-    val isShoppingCart: Boolean,
-    val displayedOrderId: String
+    val items: List<OrderItem>
 )
 
 data class OrderItem(

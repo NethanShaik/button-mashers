@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
 
         dbHelper = GameDatabaseHelper(this)
         val games = dbHelper.getAllGames()
+        val categories = dbHelper.getAllCategories()
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
