@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -69,10 +70,11 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         )
 
         // Populate game list with games.
-        val games = dbHelper.getAllGames()
+        val allGames = dbHelper.getAllGames()
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
-        recyclerView.adapter = GameAdapter(games, this)
+        val gameAdapter = GameAdapter(allGames, this)
+        recyclerView.adapter = gameAdapter
 
         // Populate category spinner with categories.
         val categories = dbHelper.getAllCategories()
@@ -80,6 +82,15 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         categorySpinner.adapter = categoryAdapter
+        categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                val selectedCategory = categories[p2]
+                gameAdapter.replaceGames(allGames.filter { it.categoryId == selectedCategory.id })
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+        }
     }
 
     override fun onGameClick(game: Game) {
@@ -100,7 +111,7 @@ interface OnGameClickListener {
 }
 
 class GameAdapter(
-    private val games: List<Game>,
+    private var games: List<Game>,
     private val listener: OnGameClickListener
 ) : RecyclerView.Adapter<GameAdapter.GameViewHolder>() {
 
@@ -127,6 +138,11 @@ class GameAdapter(
         holder.itemView.setOnClickListener {
             listener.onGameClick(game)
         }
+    }
+
+    fun replaceGames(newGames: List<Game>) {
+        games = newGames
+        notifyDataSetChanged()
     }
 
     override fun getItemCount() = games.size
