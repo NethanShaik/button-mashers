@@ -33,7 +33,7 @@ fun copyDatabaseFromAssets(context: Context, overwrite: Boolean = false) {
     }
 }
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnGameClickListener {
     private lateinit var dbHelper: GameDatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,17 +66,29 @@ class MainActivity : AppCompatActivity() {
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
-        recyclerView.adapter = GameAdapter(games)
+        recyclerView.adapter = GameAdapter(games, this)
+    }
 
-//        val itemBtn = findViewById<Button>(R.id.item_btn)
-//        itemBtn.setOnClickListener {
-//            val intent = Intent(this, ItemActivity::class.java)
-//            startActivity(intent)
-//        }
+    override fun onGameClick(game: Game) {
+        val intent = Intent(this, ItemActivity::class.java)
+        intent.putExtra("gameId", game.id)
+        intent.putExtra("gameTitle", game.title)
+        intent.putExtra("gameDescription", game.description)
+        intent.putExtra("gameReleaseDate", game.releaseDate)
+        intent.putExtra("gamePrice", game.price)
+        intent.putExtra("gameCategoryId", game.categoryId)
+        startActivity(intent)
     }
 }
 
-class GameAdapter(private val games: List<Game>) : RecyclerView.Adapter<GameAdapter.GameViewHolder>() {
+interface OnGameClickListener {
+    fun onGameClick(game: Game)
+}
+
+class GameAdapter(
+    private val games: List<Game>,
+    private val listener: OnGameClickListener
+) : RecyclerView.Adapter<GameAdapter.GameViewHolder>() {
 
     class GameViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val gameImage: ImageView = view.findViewById(R.id.game_image)
@@ -93,6 +105,9 @@ class GameAdapter(private val games: List<Game>) : RecyclerView.Adapter<GameAdap
         val game = games[position]
         holder.gameTitle.text = game.title
         holder.gamePrice.text = "$${game.price}"
+        holder.itemView.setOnClickListener {
+            listener.onGameClick(game)
+        }
     }
 
     override fun getItemCount() = games.size
