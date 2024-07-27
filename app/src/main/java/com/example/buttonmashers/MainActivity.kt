@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         recyclerView.adapter = gameAdapter
 
         // Populate category spinner with categories.
-        val categories = dbHelper.getAllCategories()
+        val categories = listOf(Category(0, "All")) + dbHelper.getAllCategories()
         val categorySpinner = findViewById<Spinner>(R.id.category_spinner)
         val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -85,7 +85,11 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val selectedCategory = categories[p2]
-                gameAdapter.replaceGames(allGames.filter { it.categoryId == selectedCategory.id })
+                if (selectedCategory.id == 0) {
+                    gameAdapter.replaceGames(allGames)
+                } else {
+                    gameAdapter.replaceGames(allGames.filter { it.categoryId == selectedCategory.id })
+                }
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 TODO("Not yet implemented")
