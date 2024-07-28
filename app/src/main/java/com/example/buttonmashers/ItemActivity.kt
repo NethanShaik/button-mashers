@@ -2,7 +2,9 @@ package com.example.buttonmashers
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -15,12 +17,17 @@ class ItemActivity : AppCompatActivity() {
     private lateinit var iconDecrease : ImageButton
     private lateinit var textViewPrice : TextView
     private var number: Int = 1
-    private var price: Double = 20.0
+    private var totalPrice: Double = 0.0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_item)
         val iconIncrease : ImageButton = findViewById(R.id.iconIncrease)
+        val addToCartButton : Button = findViewById(R.id.addToCartButton)
+        val textViewDescription : TextView = findViewById(R.id.textViewDescription)
+        val textViewGameName : TextView = findViewById(R.id.textViewGameName)
+        val gameImage : ImageView = findViewById(R.id.gameImage)
         textViewPrice = findViewById(R.id.textViewPrice)
         textViewQuantity = findViewById(R.id.textViewQuantity)
         iconDecrease = findViewById(R.id.iconDecrease)
@@ -31,6 +38,16 @@ class ItemActivity : AppCompatActivity() {
             insets
         }
         val toolbar: Toolbar = findViewById(R.id.toolbar)
+
+        //Accessing Values from the main activity screen
+        textViewPrice.text = intent.getDoubleExtra("gamePrice",0.0).toString()
+        val price = intent.getDoubleExtra("gamePrice",0.0)
+        textViewDescription.text = intent.getStringExtra("gameDescription")
+        toolbar.title = intent.getStringExtra("gameTitle")
+        textViewGameName.text = intent.getStringExtra("gameTitle")
+        val imageResId = intent.getIntExtra("gameImageResId",0)
+        gameImage.setImageResource(imageResId)
+
         setSupportActionBar(toolbar) // Set the toolbar as the support action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
         supportActionBar?.setDisplayShowTitleEnabled(true) // Show title
@@ -38,14 +55,18 @@ class ItemActivity : AppCompatActivity() {
         iconIncrease.setOnClickListener{
             number++// Increase number quantity
             updateNumber()
-            updatePrice()
+            updatePrice(price)
         }
 
         iconDecrease.setOnClickListener{
             number--// Decrease number quantity
             updateNumber()
-            updatePrice()
+            updatePrice(price)
         }
+
+    addToCartButton.setOnClickListener{
+
+    }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -64,9 +85,9 @@ class ItemActivity : AppCompatActivity() {
         textViewQuantity.text = number.toString()
         iconDecrease.isEnabled = number > 1// Disable decrease button if number is 1
     }
-    private fun updatePrice() {
-        price = number * 20.0
-        textViewPrice.text = "$$price"
+    private fun updatePrice(price: Double) {
+        totalPrice = number * price
+        textViewPrice.text = "$$totalPrice"
 
     }
 }
