@@ -106,6 +106,7 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         intent.putExtra("gamePrice", game.price)
         intent.putExtra("gameCategoryId", game.categoryId)
         intent.putExtra("gameImageResId", game.imageResId)
+        println(game.imageResId)
         startActivity(intent)
     }
 }
