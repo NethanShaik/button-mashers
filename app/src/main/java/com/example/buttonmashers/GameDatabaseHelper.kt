@@ -108,5 +108,68 @@ class GameDatabaseHelper(
         return orders
     }
 
+    // Add a game with quantity to the shopping cart.
+    fun addGameToCart(gameId: Int, quantity: Int) {
+        val db = writableDatabase
 
+        // Find the existing shopping cart order, or create a new one.
+        val cartCursor = db.query(
+            "orders",
+            null,
+            "isShoppingCart = ?",
+            arrayOf("1"),
+            null,
+            null,
+            null
+        )
+
+        var cartId: Int? = null
+
+        if (cartCursor.moveToFirst()) {
+            cartId = cartCursor.getInt(cartCursor.getColumnIndexOrThrow("id"))
+        } else {
+            // No cart found in DB, create a new one (new empty order with isShoppingCart = 1).
+            val values = ContentValues().apply {
+                put("isShoppingCart", 1)
+                put("displayed_order_id", "Cart") // A default displayed ID
+            }
+            cartId = db.insert("orders", null, values).toInt()
+        }
+        cartCursor.close()
+
+        // Check if the game is already in the cart.
+        val itemCursor = db.query(
+            "order_items",
+            null,
+            "order_id = ? AND game_id = ?",
+            arrayOf(cartId.toString(), gameId.toString()),
+            null,
+            null,
+            null
+        )
+
+        if (itemCursor.moveToFirst()) {
+            // Game is already in the cart, update the quantity.
+            val existingQuantity = itemCursor.getInt(itemCursor.getColumnIndexOrThrow("quantity"))
+            val newQuantity = existingQuantity + quantity
+            val values = ContentValues().apply {
+                put("quantity", newQuantity)
+            }
+            db.update(
+                "order_items",
+                values,
+                "order_id = ? AND game_id = ?",
+                arrayOf(cartId.toString(), gameId.toString())
+            )
+        } else {
+            // Game is not in the cart, add new order item.
+            val values = ContentValues().apply {
+                put("order_id", cartId)
+                put("game_id", gameId)
+                put("quantity", quantity)
+            }
+            db.insert("order_items", null, values)
+        }
+        itemCursor.close()
+    }
 }
