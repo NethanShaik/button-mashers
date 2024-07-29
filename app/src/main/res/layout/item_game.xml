@@ -21,7 +21,8 @@
         android:paddingTop="8dp"
         android:text="Game Title"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textAlignment="center" />
 
     <TextView
         android:id="@+id/game_price"
