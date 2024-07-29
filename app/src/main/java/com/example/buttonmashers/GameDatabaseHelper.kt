@@ -96,8 +96,9 @@ class GameDatabaseHelper(
                 with(cursorItems) {
                     while (moveToNext()) {
                         val gameId = getInt(getColumnIndexOrThrow("game_id"))
+                        val game = games.find { it.id == gameId }!!
                         val quantity = getInt(getColumnIndexOrThrow("quantity"))
-                        items.add(OrderItem(orderId=orderId, game=games.find { it.id == gameId }!!, quantity=quantity))
+                        items.add(OrderItem(orderId=orderId, game=game, quantity=quantity))
                     }
                     close()
                 }
@@ -172,4 +173,63 @@ class GameDatabaseHelper(
         }
         itemCursor.close()
     }
+
+    // Get the current shopping cart order.
+    fun getCart(): Order? {
+        val games = this.getAllGames()
+
+        val db = readableDatabase
+        val cartCursor = db.query(
+            "orders",
+            null,
+            "isShoppingCart = ?",
+            arrayOf("1"),
+            null,
+            null,
+            null
+        )
+
+        if (cartCursor.moveToFirst()) {
+            val orderId = cartCursor.getInt(cartCursor.getColumnIndexOrThrow("id"))
+            val displayedOrderId = cartCursor.getString(cartCursor.getColumnIndexOrThrow("displayed_order_id"))
+            val orderDate = cartCursor.getString(cartCursor.getColumnIndexOrThrow("order_date"))
+
+            // Get order items for the current order.
+            val items = mutableListOf<OrderItem>()
+            val cursorItems = db.query(
+                "order_items",
+                null,
+                "order_id = ?",
+                arrayOf(orderId.toString()),
+                null,
+                null,
+                null
+            )
+            with(cursorItems) {
+                while (moveToNext()) {
+                    val gameId = getInt(getColumnIndexOrThrow("game_id"))
+                    val game = games.find { it.id == gameId }!!
+                    val quantity = getInt(getColumnIndexOrThrow("quantity"))
+                    items.add(
+                        OrderItem(
+                            orderId=orderId,
+                            game=game,
+                            quantity=quantity
+                        )
+                    )
+                }
+                close()
+            }
+            cartCursor.close()
+            return Order(
+                id=orderId,
+                displayedOrderId=displayedOrderId,
+                orderDate=orderDate,
+                items=items
+            )
+        }
+        cartCursor.close()
+        return null // No cart found.
+    }
+
 }
