@@ -57,4 +57,51 @@ class GameDatabaseHelper(
         }
         return categories
     }
+
+    fun getAllOrders(): List<Order> {
+        val orders = mutableListOf<Order>()
+        val db = readableDatabase
+        val cursorOrders = db.query(
+            "orders",
+            null,
+            null,
+            null,
+            null,
+            null,
+            "order_date DESC" // Sort by date in descending order
+        )
+        with(cursorOrders) {
+            while (moveToNext()) {
+                val orderId = getInt(getColumnIndexOrThrow("id"))
+                val displayedOrderId = getString(getColumnIndexOrThrow("displayed_order_id"))
+                val totalPrice = getDouble(getColumnIndexOrThrow("total_price"))
+                val orderDate = getString(getColumnIndexOrThrow("order_date"))
+
+                // Get order items for the current order
+                val items = mutableListOf<OrderItem>()
+                val cursorItems = db.query(
+                    "order_items",
+                    null,
+                    "order_id = ?",
+                    arrayOf(orderId.toString()),
+                    null,
+                    null,
+                    null
+                )
+                with(cursorItems) {
+                    while (moveToNext()) {
+                        val gameId = getInt(getColumnIndexOrThrow("game_id"))
+                        val quantity = getInt(getColumnIndexOrThrow("quantity"))
+                        val price = getDouble(getColumnIndexOrThrow("price"))
+                        items.add(OrderItem(orderId, gameId, quantity, price))
+                    }
+                    close()
+                }
+                orders.add(Order(orderId, displayedOrderId, totalPrice, orderDate, items))
+            }
+            close()
+        }
+        return orders
+    }
+
 }
