@@ -22,6 +22,7 @@ class GameDatabaseHelper(
         // Do nothing.
     }
 
+    // Get a complete list of games.
     fun getAllGames(): List<Game> {
         val games = mutableListOf<Game>()
         val db = readableDatabase
@@ -42,6 +43,7 @@ class GameDatabaseHelper(
         return games
     }
 
+    // Get game categories.
     fun getAllCategories(): List<Category> {
         val categories = mutableListOf<Category>()
         val db = readableDatabase
@@ -58,6 +60,7 @@ class GameDatabaseHelper(
         return categories
     }
 
+    // Get a complete order history.
     fun getAllOrders(): List<Order> {
         val games = this.getAllGames()
 
