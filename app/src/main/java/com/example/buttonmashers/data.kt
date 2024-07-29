@@ -21,15 +21,12 @@ data class Category(
 
 data class Order(
     val id: Int,
-    val displayedOrderId: String,
-    val totalPrice: Double,
     val orderDate: String,
     val items: List<OrderItem>
 )
 
 data class OrderItem(
     val orderId: Int,
-    val gameId: Int,
+    val game: Game,
     val quantity: Int,
-    val price: Double
 )
