@@ -1,5 +1,6 @@
 package com.example.buttonmashers
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -78,6 +79,7 @@ class GameDatabaseHelper(
         with(cursorOrders) {
             while (moveToNext()) {
                 val orderId = getInt(getColumnIndexOrThrow("id"))
+                val displayedOrderId = getString(getColumnIndexOrThrow("displayed_order_id"))
                 val orderDate = getString(getColumnIndexOrThrow("order_date"))
 
                 // Get order items for the current order
@@ -99,11 +101,12 @@ class GameDatabaseHelper(
                     }
                     close()
                 }
-                orders.add(Order(id=orderId, orderDate=orderDate, items=items))
+                orders.add(Order(id=orderId, displayedOrderId=displayedOrderId, orderDate=orderDate, items=items))
             }
             close()
         }
         return orders
     }
+
 
 }

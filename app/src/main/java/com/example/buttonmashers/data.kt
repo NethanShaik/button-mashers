@@ -21,6 +21,7 @@ data class Category(
 
 data class Order(
     val id: Int,
+    val displayedOrderId: String,
     val orderDate: String,
     val items: List<OrderItem>
 )
