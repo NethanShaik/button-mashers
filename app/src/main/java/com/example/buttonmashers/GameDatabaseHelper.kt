@@ -36,8 +36,11 @@ class GameDatabaseHelper(
                 val releaseDate = getString(getColumnIndexOrThrow("release_date"))
                 val price = getDouble(getColumnIndexOrThrow("price"))
                 val categoryId = getInt(getColumnIndexOrThrow("category_id"))
+                val rating = getFloat(getColumnIndexOrThrow("rating"))
+                val hoursPlayed = getInt(getColumnIndexOrThrow("hours_played"))
+                val owned = getString(getColumnIndexOrThrow("owned")).toIntOrNull() == 1
                 val imagePath = getString(getColumnIndexOrThrow("image_path"))
-                games.add(Game(id, title, description, releaseDate, price, categoryId, fileNameToIdConverter(imagePath)))
+                games.add(Game(id, title, description, releaseDate, price, categoryId, fileNameToIdConverter(imagePath), rating, hoursPlayed, owned))
             }
             close()
         }
