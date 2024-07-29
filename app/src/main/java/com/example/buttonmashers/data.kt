@@ -24,7 +24,9 @@ data class Order(
     val displayedOrderId: String,
     val orderDate: String,
     val items: List<OrderItem>
-)
+) {
+    val total: Double get() = items.sumOf { it.game.price * it.quantity }
+}
 
 data class OrderItem(
     val orderId: Int,
