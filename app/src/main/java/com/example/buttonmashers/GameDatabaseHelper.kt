@@ -232,4 +232,71 @@ class GameDatabaseHelper(
         return null // No cart found.
     }
 
+    // Helper function to get the order ID of the current shopping cart.
+    private fun getCartId(): Int? {
+        val db = readableDatabase
+        val cartCursor = db.query(
+            "orders",
+            null,
+            "isShoppingCart = ?",
+            arrayOf("1"),
+            null,
+            null,
+            null
+        )
+
+        val cartId = if (cartCursor.moveToFirst()) {
+            cartCursor.getInt(cartCursor.getColumnIndexOrThrow("id"))
+        } else {
+            null
+        }
+        cartCursor.close()
+        return cartId
+    }
+
+    // Update the quantity of a game in the shopping cart.
+    fun updateCartItemQuantity(gameId: Int, newQuantity: Int) {
+        val db = writableDatabase
+
+        val cartId = getCartId()
+        if (cartId != null) {
+            val values = ContentValues().apply {
+                put("quantity", newQuantity)
+            }
+            db.update(
+                "order_items",
+                values,
+                "order_id = ? AND game_id = ?",
+                arrayOf(cartId.toString(), gameId.toString())
+            )
+        }
+    }
+
+    // Remove a game from the shopping cart.
+    fun removeCartItem(gameId: Int) {
+        val db = writableDatabase
+
+        val cartId = getCartId()
+        if (cartId != null) {
+            db.delete(
+                "order_items",
+                "order_id = ? AND game_id = ?",
+                arrayOf(cartId.toString(), gameId.toString())
+            )
+        }
+    }
+
+    // Checkout the current shopping cart (convert it to an normal order).
+    fun checkoutCart() {
+        val db = writableDatabase
+
+        val cartId = getCartId()
+        if (cartId != null) {
+            val values = ContentValues().apply {
+                put("isShoppingCart", 0)
+            }
+            db.update("orders", values, "id = ?", arrayOf(cartId.toString()))
+        }
+    }
+
 }
