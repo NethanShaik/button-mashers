@@ -1,5 +1,6 @@
 package com.example.buttonmashers
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
@@ -16,7 +17,8 @@ class ItemActivity : AppCompatActivity() {
     private lateinit var textViewQuantity: TextView
     private lateinit var iconDecrease : ImageButton
     private lateinit var textViewPrice : TextView
-    private var number: Int = 1
+    private lateinit var dbHelper: GameDatabaseHelper
+    private var quantity: Int = 1
     private var totalPrice: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +41,14 @@ class ItemActivity : AppCompatActivity() {
         }
         val toolbar: Toolbar = findViewById(R.id.toolbar)
 
+        dbHelper = GameDatabaseHelper(this) { fileName ->
+            resources.getIdentifier(
+                fileName,
+                "drawable",
+                packageName
+            )
+        }
+
         //Accessing Values from the main activity screen
         textViewPrice.text = intent.getDoubleExtra("gamePrice",0.0).toString()
         val price = intent.getDoubleExtra("gamePrice",0.0)
@@ -53,19 +63,22 @@ class ItemActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(true) // Show title
 
         iconIncrease.setOnClickListener{
-            number++// Increase number quantity
+            quantity++// Increase number quantity
             updateNumber()
             updatePrice(price)
         }
 
         iconDecrease.setOnClickListener{
-            number--// Decrease number quantity
+            quantity--// Decrease number quantity
             updateNumber()
             updatePrice(price)
         }
 
-    addToCartButton.setOnClickListener{
 
+    addToCartButton.setOnClickListener{
+        dbHelper.addGameToCart(intent.getIntExtra("gameId",0),quantity)
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
     }
     }
 
@@ -82,11 +95,11 @@ class ItemActivity : AppCompatActivity() {
 
     private fun updateNumber() {
         // Update the text view with the current quantity
-        textViewQuantity.text = number.toString()
-        iconDecrease.isEnabled = number > 1// Disable decrease button if number is 1
+        textViewQuantity.text = quantity.toString()
+        iconDecrease.isEnabled = quantity > 1// Disable decrease button if number is 1
     }
     private fun updatePrice(price: Double) {
-        totalPrice = number * price
+        totalPrice = quantity * price
         textViewPrice.text = "$$totalPrice"
 
     }
