@@ -7,7 +7,10 @@ data class Game(
     val releaseDate: String,
     val price: Double,
     val categoryId: Int,
-    val imageResId: Int
+    val imageResId: Int,
+    val rating: Float,
+    val hoursPlayed: Int,
+    val owned: Boolean
 )
 
 data class Category(
@@ -22,14 +25,14 @@ data class Category(
 data class Order(
     val id: Int,
     val displayedOrderId: String,
-    val totalPrice: Double,
     val orderDate: String,
     val items: List<OrderItem>
-)
+) {
+    val total: Double get() = items.sumOf { it.game.price * it.quantity }
+}
 
 data class OrderItem(
     val orderId: Int,
-    val gameId: Int,
+    val game: Game,
     val quantity: Int,
-    val price: Double
 )

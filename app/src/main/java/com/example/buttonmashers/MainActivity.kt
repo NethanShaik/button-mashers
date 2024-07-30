@@ -38,6 +38,11 @@ fun copyDatabaseFromAssets(context: Context, overwrite: Boolean = false) {
 class MainActivity : AppCompatActivity(), OnGameClickListener {
     private lateinit var dbHelper: GameDatabaseHelper
 
+//    override fun onStart() {
+//        super.onStart()
+//        intent = Intent(this, ProfileActivity::class.java)
+//        startActivity(intent)
+//    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -94,6 +99,28 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
+        }
+
+        // Populate sort by spinner with sort options.
+        val sortOptions = listOf("Featured", "Price: Low to High", "Price: High to Low")
+        val sortBySpinner = findViewById<Spinner>(R.id.sort_by_spinner)
+        val sortByAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, sortOptions)
+        sortByAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        sortBySpinner.adapter = sortByAdapter
+        sortBySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                val selectedOption = sortOptions[p2]
+                val updatedGames = when (selectedOption) {
+                    "Price: Low to High" -> allGames.sortedBy { it.price }
+                    "Price: High to Low" -> allGames.sortedByDescending { it.price }
+                    else -> allGames
+                }
+                gameAdapter.replaceGames(updatedGames)
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
         }
     }
 
