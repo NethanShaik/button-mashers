@@ -98,7 +98,6 @@ class ItemActivity : AppCompatActivity() {
     }
     private fun updatePrice(price: Double) {
         totalPrice = quantity * price
-        textViewPrice.text = "$$totalPrice"
-
+        textViewPrice.text = "$${String.format("%.2f", totalPrice)}" // Format to last 2 digits
     }
 }
