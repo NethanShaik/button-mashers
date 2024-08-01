@@ -74,12 +74,10 @@ class ItemActivity : AppCompatActivity() {
             updatePrice(price)
         }
 
-
-    addToCartButton.setOnClickListener{
-        dbHelper.addGameToCart(intent.getIntExtra("gameId",0),quantity)
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-    }
+        addToCartButton.setOnClickListener {
+            dbHelper.addGameToCart(intent.getIntExtra("gameId",0), quantity)
+            finish()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
