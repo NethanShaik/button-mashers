@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         }
 
         // Copy the database from assets into the app's internal storage.
-        copyDatabaseFromAssets(this, overwrite = true)
+        copyDatabaseFromAssets(this, overwrite = false)
 
         // Setup DB helper.
         dbHelper = GameDatabaseHelper(

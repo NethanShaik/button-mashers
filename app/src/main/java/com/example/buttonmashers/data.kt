@@ -36,3 +36,9 @@ data class OrderItem(
     val game: Game,
     val quantity: Int,
 )
+
+data class User(
+    val id: Int,
+    val name: String,
+    val email: String
+)

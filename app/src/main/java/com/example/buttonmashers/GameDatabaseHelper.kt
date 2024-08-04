@@ -302,4 +302,41 @@ class GameDatabaseHelper(
         }
     }
 
+    fun updateRating(gameId: Int, newRating: Float) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("rating", newRating)
+        }
+        val selection = "id =?"
+        val selectionArgs = arrayOf(gameId.toString())
+        db.update("games", values, selection, selectionArgs)
+        db.close()
+    }
+
+    fun updateProfile(name: String, email: String) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("name", name)
+            put("email", email)
+        }
+        val selection = "id =?"
+        val selectionArgs = arrayOf("1")
+        db.update("users", values, selection, selectionArgs)
+        db.close()
+    }
+
+    fun getProfile(): User {
+        val db = readableDatabase
+        val cursor = db.query("users", null, null, null, null, null, null)
+        var user: User? = null
+        with(cursor) {
+            while (moveToNext()) {
+                val name = getString(getColumnIndexOrThrow("name"))
+                val email = getString(getColumnIndexOrThrow("email"))
+                user = User(1, name, email)
+                }
+            close()
+        }
+        return user!!
+    }
 }
