@@ -23,14 +23,6 @@ interface OnTotalPriceChangeListener {
 }
 
 class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
-    private var gameList: MutableList<String> = mutableListOf()
-    private lateinit var quantity: TextView
-    private lateinit var price: TextView
-    private lateinit var increase: ImageButton
-    private lateinit var decrease: ImageButton
-    private lateinit var delete_item: ImageButton
-    private var quant: Int = 1
-    private var updatedPrice: Double = 50.0
     lateinit var total: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
