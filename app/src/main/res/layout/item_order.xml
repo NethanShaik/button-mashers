@@ -51,7 +51,7 @@
         android:id="@+id/order_game_decrease"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/background_color"
         android:src="@drawable/baseline_horizontal_rule_24"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -73,7 +73,7 @@
         android:id="@+id/order_game_increase"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/background_color"
         android:src="@drawable/baseline_add_24"
         app:layout_constraintStart_toEndOf="@+id/order_game_quantity"
         app:layout_constraintTop_toTopOf="@+id/order_game_decrease" />
