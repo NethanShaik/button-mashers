@@ -143,6 +143,7 @@ class OrderAdapter(
 
     fun delete_item(index:Int){
         if(index >=0 && index < orders.size) {
+            dbHelper.removeCartItem(orders[index].game.id)
             val mutable_orders = orders.toMutableList()
             mutable_orders.removeAt(index)
             orders = mutable_orders
