@@ -58,11 +58,6 @@ class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
         val orderAdapter = OrderAdapter(orders?.items?:listOf(),this)
         recyclerView.adapter = orderAdapter
 
-
-//        quantity = findViewById(R.id.order_game_quantity)
-//        price = findViewById(R.id.order_game_price)
-
-//        decrease.isEnabled = false
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar) // Set the toolbar as the support action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
@@ -168,15 +163,6 @@ class OrderAdapter(
         val new_price = quantity * unitPrice
         gamePrice.text = String.format("%.2f", new_price)
     }
-    //    quant --
-    //    quantity.text = quant.toString()
-    //    updatedPrice =  quant * 50.0
-    //    price.text = updatedPrice.toString()
-    //   decrease.isEnabled = quant > 1
-    //}
-
-
-
 
     override fun getItemCount() = orders.size
 }
