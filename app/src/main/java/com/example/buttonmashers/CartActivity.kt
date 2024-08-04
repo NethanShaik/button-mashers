@@ -111,16 +111,16 @@ class OrderAdapter(
             holder.gameImage.setImageResource(orders[position].game.imageResId)
         }
         holder.delete.setOnClickListener() {
-            delete_item(position)
+            deleteItem(position)
         }
 
         holder.quantity_increase.setOnClickListener {
-            increase_quantity(position, holder.gameQuantity, holder.gamePrice)
+            increaseQuantity(position, holder.gameQuantity, holder.gamePrice)
             holder.quantity_decrease.isEnabled = holder.gameQuantity.text.toString().toInt() > 1
         }
 
         holder.quantity_decrease.setOnClickListener {
-            decrease_quantity(position, holder.gameQuantity, holder.gamePrice)
+            decreaseQuantity(position, holder.gameQuantity, holder.gamePrice)
             holder.quantity_decrease.isEnabled = holder.gameQuantity.text.toString().toInt() > 1
         }
     }
@@ -134,7 +134,7 @@ class OrderAdapter(
         totalPriceChangeListener.onTotalPriceChanged(total)
     }
 
-    fun delete_item(index: Int) {
+    fun deleteItem(index: Int) {
         if (index >= 0 && index < orders.size) {
             dbHelper.removeCartItem(orders[index].game.id)
             val mutable_orders = orders.toMutableList()
@@ -145,26 +145,34 @@ class OrderAdapter(
         }
     }
 
-    fun increase_quantity(index: Int, gameQuantity: TextView, gamePrice: TextView) {
-        var quantity = gameQuantity.text.toString().toInt()
-        val unitPrice = gamePrice.text.toString().toDouble() / quantity
-        quantity++
-        gameQuantity.text = quantity.toString()
-        val new_price = quantity * unitPrice
-        gamePrice.text = String.format("%.2f", new_price)
-        orders[index].quantity = quantity
+    private fun updateOrderItem(order: OrderItem, gameQuantity: TextView, gamePrice: TextView) {
+        // Update UI
+        gameQuantity.text = order.quantity.toString()
+        gamePrice.text = String.format("%.2f", order.game.price * order.quantity)
+
+        // Update total
         updateTotalPrice()
+
+        // Update database
+        dbHelper.updateCartItemQuantity(order.game.id, order.quantity)
     }
 
-    fun decrease_quantity(index: Int, gameQuantity: TextView, gamePrice: TextView) {
-        var quantity = gameQuantity.text.toString().toInt()
-        val unitPrice = gamePrice.text.toString().toDouble() / quantity
-        quantity--
-        gameQuantity.text = quantity.toString()
-        val new_price = quantity * unitPrice
-        gamePrice.text = String.format("%.2f", new_price)
-        orders[index].quantity = quantity
-        updateTotalPrice()
+    private fun increaseQuantity(index: Int, gameQuantity: TextView, gamePrice: TextView) {
+        val order = orders[index]
+
+        if (order.quantity < 10) {
+            order.quantity += 1
+            updateOrderItem(order, gameQuantity, gamePrice)
+        }
+    }
+
+    private fun decreaseQuantity(index: Int, gameQuantity: TextView, gamePrice: TextView) {
+        val order = orders[index]
+
+        if (order.quantity > 1) {
+            order.quantity -= 1
+            updateOrderItem(order, gameQuantity, gamePrice)
+        }
     }
 
     override fun getItemCount() = orders.size
