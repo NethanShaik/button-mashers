@@ -33,6 +33,7 @@ class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
     private lateinit var delete_item: ImageButton
     private var quant: Int = 1
     private var updatedPrice: Double = 50.0
+    lateinit var total: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,8 +68,9 @@ class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
         supportActionBar?.setDisplayShowTitleEnabled(true) // Show title
 
+        total = findViewById(R.id.total_amount)
     }
-    val total:TextView = findViewById(R.id.total_amount)
+
     override fun onTotalPriceChanged(totalPrice: Double) {
         total.text = "$totalPrice" // Update the TextView with the total price
     }
