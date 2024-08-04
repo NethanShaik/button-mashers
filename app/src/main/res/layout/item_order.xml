@@ -4,51 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:orientation="horizontal">
+    android:layout_marginTop="10dp">
 
+    <ImageView
+        android:id="@+id/order_game_image"
+        android:layout_width="80dp"
+        android:layout_height="96dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/order_game_title"
-        android:layout_width="125dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Forza Horizon 4"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginStart="25dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.283"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.246" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toEndOf="@+id/order_game_image"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/order_game_category"
         android:layout_width="wrap_content"
-        android:layout_height="23dp"
+        android:layout_height="wrap_content"
         android:text="Racing"
         android:textSize="14sp"
-        android:layout_marginStart="21dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.226"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.64" />
-
-    <ImageView
-        android:id="@+id/order_game_image"
-        android:layout_width="71dp"
-        android:layout_height="87dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.005"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@+id/order_game_title"
+        app:layout_constraintTop_toBottomOf="@+id/order_game_title" />
 
     <ImageButton
         android:id="@+id/order_game_delete"
@@ -56,68 +43,51 @@
         android:layout_height="50dp"
         android:background="@color/background_color"
         android:src="@drawable/baseline_delete_24"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.955"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.567" />
-
-    <ImageButton
-        android:id="@+id/order_game_increase"
-        android:layout_width="24dp"
-        android:layout_height="22dp"
-        android:backgroundTint="@color/white"
-        android:src="@drawable/baseline_add_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.568"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.692" />
-
-    <TextView
-        android:id="@+id/order_game_quantity"
-        android:layout_width="14dp"
-        android:layout_height="18dp"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.666" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageButton
         android:id="@+id/order_game_decrease"
-        android:layout_width="26dp"
-        android:layout_height="22dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:backgroundTint="@color/white"
         android:src="@drawable/baseline_horizontal_rule_24"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.428"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.692" />
+        app:layout_constraintStart_toStartOf="@id/order_game_title" />
+
+    <TextView
+        android:id="@+id/order_game_quantity"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        tools:text="10"
+        app:layout_constraintStart_toEndOf="@+id/order_game_decrease"
+        app:layout_constraintTop_toTopOf="@+id/order_game_decrease"
+        app:layout_constraintBottom_toBottomOf="@+id/order_game_decrease" />
+
+    <ImageButton
+        android:id="@+id/order_game_increase"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:backgroundTint="@color/white"
+        android:src="@drawable/baseline_add_24"
+        app:layout_constraintStart_toEndOf="@+id/order_game_quantity"
+        app:layout_constraintTop_toTopOf="@+id/order_game_decrease" />
 
     <TextView
         android:id="@+id/order_game_price"
-        android:layout_width="59dp"
-        android:layout_height="33dp"
-        android:textSize="24sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginTop="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.75"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.703" />
-
-
-
-
+        tools:text="1000.00"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/order_game_increase"
+        app:layout_constraintStart_toEndOf="@+id/order_game_increase"
+        app:layout_constraintTop_toTopOf="@+id/order_game_increase" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
