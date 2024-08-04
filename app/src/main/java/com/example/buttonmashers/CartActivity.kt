@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 private lateinit var dbHelper: GameDatabaseHelper
@@ -33,8 +34,12 @@ class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
-
         }
+
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar) // Set the toolbar as the support action bar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
+        supportActionBar?.setDisplayShowTitleEnabled(true) // Show title
 
         // Setup DB helper.
         dbHelper = GameDatabaseHelper(
@@ -43,15 +48,10 @@ class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
         )
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = GridLayoutManager(this, 1) // 2 columns
+        recyclerView.layoutManager = LinearLayoutManager(this)
         val orders = dbHelper.getCart()
         val orderAdapter = OrderAdapter(orders?.items?:listOf(),this)
         recyclerView.adapter = orderAdapter
-
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar) // Set the toolbar as the support action bar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
-        supportActionBar?.setDisplayShowTitleEnabled(true) // Show title
 
         total = findViewById(R.id.total_amount)
         orderAdapter.updateTotalPrice() // Init total price
