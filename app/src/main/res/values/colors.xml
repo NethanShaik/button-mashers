@@ -8,4 +8,6 @@
     <color name="text_color_secondary">#666666</color>
     <color name="button_background">#F26979</color>
     <color name="button_text_color">#FFFFFF</color>
+    <color name="prussian_blue">#003153</color>
+    <color name="gold">#FFD700</color>
 </resources>
