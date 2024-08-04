@@ -7,6 +7,7 @@ data class Game(
     val releaseDate: String,
     val price: Double,
     val categoryId: Int,
+    val categoryName: String,
     val imageResId: Int,
     val rating: Float,
     val hoursPlayed: Int,

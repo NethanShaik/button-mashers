@@ -25,6 +25,7 @@ class GameDatabaseHelper(
 
     // Get a complete list of games.
     fun getAllGames(): List<Game> {
+        val categories = this.getAllCategories()
         val games = mutableListOf<Game>()
         val db = readableDatabase
         val cursor = db.query("games", null, null, null, null, null, null)
@@ -40,7 +41,7 @@ class GameDatabaseHelper(
                 val hoursPlayed = getInt(getColumnIndexOrThrow("hours_played"))
                 val owned = getString(getColumnIndexOrThrow("owned")).toIntOrNull() == 1
                 val imagePath = getString(getColumnIndexOrThrow("image_path"))
-                games.add(Game(id, title, description, releaseDate, price, categoryId, fileNameToIdConverter(imagePath), rating, hoursPlayed, owned))
+                games.add(Game(id, title, description, releaseDate, price, categoryId, categories.find { it.id == categoryId }?.name ?: "?", fileNameToIdConverter(imagePath), rating, hoursPlayed, owned))
             }
             close()
         }

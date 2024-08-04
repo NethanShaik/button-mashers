@@ -13,17 +13,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 private lateinit var dbHelper: GameDatabaseHelper
 
-interface OnTotalPriceChangeListener {
-    fun onTotalPriceChanged(totalPrice: Double)
+interface OnCartItemsChangeListener {
+    fun onCartItemsChanged(updatedItems: List<OrderItem>)
 }
 
-class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
+class CartActivity : AppCompatActivity(), OnCartItemsChangeListener {
     lateinit var total: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,18 +46,33 @@ class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
             { fileName -> resources.getIdentifier(fileName, "drawable", packageName) }
         )
 
+        total = findViewById(R.id.total_amount)
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val orders = dbHelper.getCart()
-        val orderAdapter = OrderAdapter(orders?.items?:listOf(),this)
+        val cart = dbHelper.getCart()
+        val items = cart?.items ?: listOf()
+        val orderAdapter = OrderAdapter(items,this)
         recyclerView.adapter = orderAdapter
 
-        total = findViewById(R.id.total_amount)
-        orderAdapter.updateTotalPrice() // Init total price
+        // Init UI on the first load
+        onCartItemsChanged(items)
     }
 
-    override fun onTotalPriceChanged(totalPrice: Double) {
-        total.text = String.format("%.2f", totalPrice) // Update the TextView with the total price
+    override fun onCartItemsChanged(updatedItems: List<OrderItem>) {
+        // Show/hide empty cart message
+        if (updatedItems.isEmpty()) {
+            findViewById<TextView>(R.id.no_games).visibility = View.VISIBLE
+        } else {
+            findViewById<TextView>(R.id.no_games).visibility = View.GONE
+        }
+
+        // Update total price
+        val newTotal = if (updatedItems.isNotEmpty()) {
+            updatedItems.sumOf { it.game.price * it.quantity }
+        } else {
+            0.0
+        }
+        total.text = String.format("%.2f", newTotal) // Update the TextView with the total price
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -74,8 +88,8 @@ class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
 }
 
 class OrderAdapter(
-    private var orders: List<OrderItem>,
-    private val totalPriceChangeListener: OnTotalPriceChangeListener
+    private var items: List<OrderItem>,
+    private val itemsListener: OnCartItemsChangeListener
 ) : RecyclerView.Adapter<OrderAdapter.OrderItemViewHolder>() {
 
     class OrderItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -95,12 +109,12 @@ class OrderAdapter(
     }
 
     override fun onBindViewHolder(holder: OrderItemViewHolder, position: Int) {
-        holder.gameTitle.text = orders[position].game.title
-        holder.gamePrice.text = orders[position].game.price.toString()
-        holder.gameQuantity.text = orders[position].quantity.toString()
-        holder.gameCategory.text = dbHelper.getAllCategories().filter { it.id==orders[position].game.categoryId }[0].name
-        if (orders[position].game.imageResId != 0) {
-            holder.gameImage.setImageResource(orders[position].game.imageResId)
+        holder.gameTitle.text = items[position].game.title
+        holder.gamePrice.text = items[position].game.price.toString()
+        holder.gameQuantity.text = items[position].quantity.toString()
+        holder.gameCategory.text = items[position].game.categoryName
+        if (items[position].game.imageResId != 0) {
+            holder.gameImage.setImageResource(items[position].game.imageResId)
         }
         holder.delete.setOnClickListener() {
             deleteItem(position)
@@ -117,23 +131,14 @@ class OrderAdapter(
         }
     }
 
-    fun updateTotalPrice() {
-        var total = 0.00
-        for (item in orders) {
-            val item_total = item.quantity * item.game.price
-            total += item_total
-        }
-        totalPriceChangeListener.onTotalPriceChanged(total)
-    }
-
     fun deleteItem(index: Int) {
-        if (index >= 0 && index < orders.size) {
-            dbHelper.removeCartItem(orders[index].game.id)
-            val mutable_orders = orders.toMutableList()
+        if (index >= 0 && index < items.size) {
+            dbHelper.removeCartItem(items[index].game.id)
+            val mutable_orders = items.toMutableList()
             mutable_orders.removeAt(index)
-            orders = mutable_orders
+            items = mutable_orders
             notifyDataSetChanged()
-            updateTotalPrice()
+            itemsListener.onCartItemsChanged(items)
         }
     }
 
@@ -142,15 +147,15 @@ class OrderAdapter(
         gameQuantity.text = order.quantity.toString()
         gamePrice.text = String.format("%.2f", order.game.price * order.quantity)
 
-        // Update total
-        updateTotalPrice()
+        // Notify listener
+        itemsListener.onCartItemsChanged(items)
 
         // Update database
         dbHelper.updateCartItemQuantity(order.game.id, order.quantity)
     }
 
     private fun increaseQuantity(index: Int, gameQuantity: TextView, gamePrice: TextView) {
-        val order = orders[index]
+        val order = items[index]
 
         if (order.quantity < 10) {
             order.quantity += 1
@@ -159,7 +164,7 @@ class OrderAdapter(
     }
 
     private fun decreaseQuantity(index: Int, gameQuantity: TextView, gamePrice: TextView) {
-        val order = orders[index]
+        val order = items[index]
 
         if (order.quantity > 1) {
             order.quantity -= 1
@@ -167,5 +172,5 @@ class OrderAdapter(
         }
     }
 
-    override fun getItemCount() = orders.size
+    override fun getItemCount() = items.size
 }
