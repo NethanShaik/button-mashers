@@ -38,11 +38,6 @@ fun copyDatabaseFromAssets(context: Context, overwrite: Boolean = false) {
 class MainActivity : AppCompatActivity(), OnGameClickListener {
     private lateinit var dbHelper: GameDatabaseHelper
 
-//    override fun onStart() {
-//        super.onStart()
-//        intent = Intent(this, ProfileActivity::class.java)
-//        startActivity(intent)
-//    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -120,8 +115,16 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
-
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val cart = dbHelper.getCart()
+        val cartItemCount = cart?.items?.sumOf { it.quantity } ?: 0
+        val cartNotification = findViewById<TextView>(R.id.notification_count)
+        cartNotification.text = cartItemCount.toString()
+        cartNotification.visibility = if (cartItemCount > 0) View.VISIBLE else View.GONE
     }
 
     override fun onGameClick(game: Game) {
