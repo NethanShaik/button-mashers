@@ -38,11 +38,11 @@ fun copyDatabaseFromAssets(context: Context, overwrite: Boolean = false) {
 class MainActivity : AppCompatActivity(), OnGameClickListener {
     private lateinit var dbHelper: GameDatabaseHelper
 
-//    override fun onStart() {
-//        super.onStart()
-//        intent = Intent(this, ProfileActivity::class.java)
-//        startActivity(intent)
-//    }
+    override fun onStart() {
+        super.onStart()
+        intent = Intent(this, ProfileActivity::class.java)
+        startActivity(intent)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

@@ -16,15 +16,30 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class ProfileActivity : AppCompatActivity() {
 
     lateinit var dbHelper: GameDatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_profile)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         // Setup DB helper.
         dbHelper = GameDatabaseHelper(
@@ -32,22 +47,13 @@ class ProfileActivity : AppCompatActivity() {
             { fileName -> resources.getIdentifier(fileName, "drawable", packageName) }
         )
 
-        var gameTitles = dbHelper.getAllGames().filter { (it.owned) }
-
-
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_profile)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
         // Initialize views
-        var nameTextView = findViewById<TextView>(R.id.nameTextView)
-        var emailTextView = findViewById<TextView>(R.id.emailTextView)
-        var editProfileButton = findViewById<Button>(R.id.editProfileButton)
+        val nameTextView = findViewById<TextView>(R.id.nameTextView)
+        val emailTextView = findViewById<TextView>(R.id.emailTextView)
+        val editProfileButton = findViewById<Button>(R.id.editProfileButton)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        val tabLayout: TabLayout = findViewById(R.id.tabLayout)
+        val viewPager: ViewPager2 = findViewById(R.id.viewPager)
 
         // Set default profile info
         nameTextView.text = dbHelper.getProfile().name
@@ -58,15 +64,19 @@ class ProfileActivity : AppCompatActivity() {
             UserEditDialogFragment().show(supportFragmentManager, "profileDialog")
         }
 
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar) // Set the toolbar as the support action bar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
-        supportActionBar?.setDisplayShowTitleEnabled(true) // Show title
+        // Setup Toolbar
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(true)
 
-        val recyclerView: RecyclerView = findViewById(R.id.recycler_view_owned_titles)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        val adapter = GameTitleAdapter(gameTitles, dbHelper)
-        recyclerView.adapter = adapter
+        // Setup ViewPager and TabLayout
+        val adapter = ViewPagerAdapter(supportFragmentManager, lifecycle)
+        viewPager.adapter = adapter
+        tabLayout.addTab(tabLayout.newTab().setText("Owned Titles"))
+        tabLayout.addTab(tabLayout.newTab().setText("Order History"))
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = if (position == 0) "Owned Titles" else "Order History"
+        }.attach()
 
         supportFragmentManager.setFragmentResultListener("requestKey", this) { _, bundle ->
             val updatedName = bundle.getString("name")
@@ -83,11 +93,10 @@ class ProfileActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                // Go back to the previous activity
                 finish()
                 true
             }
-            else -> super.onOptionsItemSelected(item) // Keep default behavior
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }
@@ -155,3 +164,16 @@ class UserEditDialogFragment : DialogFragment(R.layout.user_edit_fragment) {
     }
 }
 
+class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
+    FragmentStateAdapter(fragmentManager, lifecycle) {
+
+    override fun getItemCount(): Int = 2
+
+    override fun createFragment(position: Int): Fragment {
+        return when (position) {
+            0 -> OwnedTitlesFragment()
+            1 -> OrderHistoryFragment()
+            else -> OwnedTitlesFragment()
+        }
+    }
+}
