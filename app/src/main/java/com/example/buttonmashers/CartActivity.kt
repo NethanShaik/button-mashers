@@ -116,7 +116,7 @@ class OrderAdapter(
         if (orders[position].game.imageResId != 0) {
             holder.gameImage.setImageResource(orders[position].game.imageResId)
         }
-        holder.delete.setOnClickListener(){
+        holder.delete.setOnClickListener() {
             delete_item(position)
         }
 
@@ -133,16 +133,16 @@ class OrderAdapter(
 
         var total = 0.00
 
-        for (item in orders){
+        for (item in orders) {
             val item_total = item.quantity * item.game.price
-            total = item_total + total
+            total += item_total
         }
         totalPriceChangeListener.onTotalPriceChanged(total)
 
     }
 
-    fun delete_item(index:Int){
-        if(index >=0 && index < orders.size) {
+    fun delete_item(index:Int) {
+        if(index >= 0 && index < orders.size) {
             dbHelper.removeCartItem(orders[index].game.id)
             val mutable_orders = orders.toMutableList()
             mutable_orders.removeAt(index)
@@ -151,7 +151,7 @@ class OrderAdapter(
         }
     }
 
-    fun increase_quantity(gameQuantity:TextView, gamePrice: TextView){
+    fun increase_quantity(gameQuantity:TextView, gamePrice: TextView) {
         var quantity = gameQuantity.text.toString().toInt()
         val unitPrice = gamePrice.text.toString().toDouble() / quantity
         quantity++
@@ -160,7 +160,7 @@ class OrderAdapter(
         gamePrice.text = String.format("%.2f", new_price)
     }
 
-    fun decrease_quantity(gameQuantity: TextView, gamePrice: TextView){
+    fun decrease_quantity(gameQuantity: TextView, gamePrice: TextView) {
         var quantity = gameQuantity.text.toString().toInt()
         val unitPrice = gamePrice.text.toString().toDouble() / quantity
         quantity--
@@ -168,15 +168,6 @@ class OrderAdapter(
         val new_price = quantity * unitPrice
         gamePrice.text = String.format("%.2f", new_price)
     }
-    //    quant --
-    //    quantity.text = quant.toString()
-    //    updatedPrice =  quant * 50.0
-    //    price.text = updatedPrice.toString()
-    //   decrease.isEnabled = quant > 1
-    //}
-
-
-
 
     override fun getItemCount() = orders.size
 }
