@@ -24,6 +24,7 @@ interface OnCartItemsChangeListener {
 }
 
 class CartActivity : AppCompatActivity(), OnCartItemsChangeListener {
+    lateinit var checkoutButton: Button
     lateinit var total: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +55,8 @@ class CartActivity : AppCompatActivity(), OnCartItemsChangeListener {
         val items = cart?.items ?: listOf()
         val orderAdapter = OrderAdapter(items,this)
         recyclerView.adapter = orderAdapter
+        checkoutButton = findViewById(R.id.checkout_button)
 
-        val checkoutButton: Button = findViewById(R.id.checkout_button)
         checkoutButton.setOnClickListener {
             dbHelper.checkoutCart()
             finish()
@@ -69,6 +70,8 @@ class CartActivity : AppCompatActivity(), OnCartItemsChangeListener {
         // Show/hide empty cart message
         if (updatedItems.isEmpty()) {
             findViewById<TextView>(R.id.no_games).visibility = View.VISIBLE
+            checkoutButton.isEnabled = false
+
         } else {
             findViewById<TextView>(R.id.no_games).visibility = View.GONE
         }
