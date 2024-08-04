@@ -72,7 +72,7 @@ class CartActivity : AppCompatActivity(), OnCartItemsChangeListener {
         } else {
             0.0
         }
-        total.text = String.format("%.2f", newTotal) // Update the TextView with the total price
+        total.text = String.format("$%.2f", newTotal) // Update the TextView with the total price
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -110,7 +110,7 @@ class OrderAdapter(
 
     override fun onBindViewHolder(holder: OrderItemViewHolder, position: Int) {
         holder.gameTitle.text = items[position].game.title
-        holder.gamePrice.text = items[position].game.price.toString()
+        holder.gamePrice.text = String.format("$%.2f", items[position].game.price)
         holder.gameQuantity.text = items[position].quantity.toString()
         holder.gameCategory.text = items[position].game.categoryName
         if (items[position].game.imageResId != 0) {
@@ -145,7 +145,7 @@ class OrderAdapter(
     private fun updateOrderItem(order: OrderItem, gameQuantity: TextView, gamePrice: TextView) {
         // Update UI
         gameQuantity.text = order.quantity.toString()
-        gamePrice.text = String.format("%.2f", order.game.price * order.quantity)
+        gamePrice.text = String.format("$%.2f", order.game.price * order.quantity)
 
         // Notify listener
         itemsListener.onCartItemsChanged(items)
