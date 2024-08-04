@@ -122,12 +122,12 @@ class OrderAdapter(
         }
 
         holder.quantity_increase.setOnClickListener {
-            increase_quantity(holder.gameQuantity, holder.gamePrice)
+            increase_quantity(position, holder.gameQuantity, holder.gamePrice)
             holder.quantity_decrease.isEnabled = holder.gameQuantity.text.toString().toInt() > 1
         }
 
         holder.quantity_decrease.setOnClickListener {
-            decrease_quantity(holder.gameQuantity,holder.gamePrice)
+            decrease_quantity(position, holder.gameQuantity, holder.gamePrice)
             holder.quantity_decrease.isEnabled = holder.gameQuantity.text.toString().toInt() > 1
         }
     }
@@ -141,7 +141,7 @@ class OrderAdapter(
         totalPriceChangeListener.onTotalPriceChanged(total)
     }
 
-    fun delete_item(index:Int) {
+    fun delete_item(index: Int) {
         if (index >= 0 && index < orders.size) {
             dbHelper.removeCartItem(orders[index].game.id)
             val mutable_orders = orders.toMutableList()
@@ -152,23 +152,25 @@ class OrderAdapter(
         }
     }
 
-    fun increase_quantity(gameQuantity:TextView, gamePrice: TextView) {
+    fun increase_quantity(index: Int, gameQuantity: TextView, gamePrice: TextView) {
         var quantity = gameQuantity.text.toString().toInt()
         val unitPrice = gamePrice.text.toString().toDouble() / quantity
         quantity++
         gameQuantity.text = quantity.toString()
         val new_price = quantity * unitPrice
         gamePrice.text = String.format("%.2f", new_price)
+        orders[index].quantity = quantity
         updateTotalPrice()
     }
 
-    fun decrease_quantity(gameQuantity: TextView, gamePrice: TextView) {
+    fun decrease_quantity(index: Int, gameQuantity: TextView, gamePrice: TextView) {
         var quantity = gameQuantity.text.toString().toInt()
         val unitPrice = gamePrice.text.toString().toDouble() / quantity
         quantity--
         gameQuantity.text = quantity.toString()
         val new_price = quantity * unitPrice
         gamePrice.text = String.format("%.2f", new_price)
+        orders[index].quantity = quantity
         updateTotalPrice()
     }
 

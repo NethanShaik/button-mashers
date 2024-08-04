@@ -34,7 +34,7 @@ data class Order(
 data class OrderItem(
     val orderId: Int,
     val game: Game,
-    val quantity: Int,
+    var quantity: Int,
 )
 
 data class User(
