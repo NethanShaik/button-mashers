@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -53,6 +54,12 @@ class CartActivity : AppCompatActivity(), OnCartItemsChangeListener {
         val items = cart?.items ?: listOf()
         val orderAdapter = OrderAdapter(items,this)
         recyclerView.adapter = orderAdapter
+
+        val checkoutButton: Button = findViewById(R.id.checkout_button)
+        checkoutButton.setOnClickListener {
+            dbHelper.checkoutCart()
+            finish()
+        }
 
         // Init UI on the first load
         onCartItemsChanged(items)
