@@ -22,9 +22,7 @@ interface OnTotalPriceChangeListener {
     fun onTotalPriceChanged(totalPrice: Double)
 }
 
-
 class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
-
     private var gameList: MutableList<String> = mutableListOf()
     private lateinit var quantity: TextView
     private lateinit var price: TextView
@@ -58,11 +56,6 @@ class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
         val orderAdapter = OrderAdapter(orders?.items?:listOf(),this)
         recyclerView.adapter = orderAdapter
 
-
-//        quantity = findViewById(R.id.order_game_quantity)
-//        price = findViewById(R.id.order_game_price)
-
-//        decrease.isEnabled = false
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar) // Set the toolbar as the support action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Show back button
