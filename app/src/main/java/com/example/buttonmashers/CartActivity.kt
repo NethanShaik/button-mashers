@@ -69,10 +69,11 @@ class CartActivity : AppCompatActivity(), OnTotalPriceChangeListener {
         supportActionBar?.setDisplayShowTitleEnabled(true) // Show title
 
         total = findViewById(R.id.total_amount)
+        orderAdapter.updateTotalPrice() // Init total price
     }
 
     override fun onTotalPriceChanged(totalPrice: Double) {
-        total.text = "$totalPrice" // Update the TextView with the total price
+        total.text = String.format("%.2f", totalPrice) // Update the TextView with the total price
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -128,26 +129,26 @@ class OrderAdapter(
         holder.quantity_decrease.setOnClickListener {
             decrease_quantity(holder.gameQuantity,holder.gamePrice)
             holder.quantity_decrease.isEnabled = holder.gameQuantity.text.toString().toInt() > 1
-
         }
+    }
 
+    fun updateTotalPrice() {
         var total = 0.00
-
         for (item in orders) {
             val item_total = item.quantity * item.game.price
             total += item_total
         }
         totalPriceChangeListener.onTotalPriceChanged(total)
-
     }
 
     fun delete_item(index:Int) {
-        if(index >= 0 && index < orders.size) {
+        if (index >= 0 && index < orders.size) {
             dbHelper.removeCartItem(orders[index].game.id)
             val mutable_orders = orders.toMutableList()
             mutable_orders.removeAt(index)
             orders = mutable_orders
             notifyDataSetChanged()
+            updateTotalPrice()
         }
     }
 
@@ -158,6 +159,7 @@ class OrderAdapter(
         gameQuantity.text = quantity.toString()
         val new_price = quantity * unitPrice
         gamePrice.text = String.format("%.2f", new_price)
+        updateTotalPrice()
     }
 
     fun decrease_quantity(gameQuantity: TextView, gamePrice: TextView) {
@@ -167,6 +169,7 @@ class OrderAdapter(
         gameQuantity.text = quantity.toString()
         val new_price = quantity * unitPrice
         gamePrice.text = String.format("%.2f", new_price)
+        updateTotalPrice()
     }
 
     override fun getItemCount() = orders.size
