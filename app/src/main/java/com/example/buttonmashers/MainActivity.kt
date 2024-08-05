@@ -37,6 +37,16 @@ fun copyDatabaseFromAssets(context: Context, overwrite: Boolean = false) {
 
 class MainActivity : AppCompatActivity(), OnGameClickListener {
     private lateinit var dbHelper: GameDatabaseHelper
+    private lateinit var gameAdapter: GameAdapter
+
+    // Data
+    private lateinit var allGames: List<Game>
+    private lateinit var categories: List<Category>
+    private val sortOptions = listOf("Featured", "Price: Low to High", "Price: High to Low")
+
+    // UI state
+    private var selectedCategory = 0
+    private var selectedSortOption = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,18 +58,6 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
             insets
         }
 
-        val profileBtn = findViewById<ImageButton>(R.id.profile_btn)
-        profileBtn.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
-        }
-
-        val cartBtn = findViewById<ImageButton>(R.id.cart_btn)
-        cartBtn.setOnClickListener {
-            val intent = Intent(this, CartActivity::class.java)
-            startActivity(intent)
-        }
-
         // Copy the database from assets into the app's internal storage.
         copyDatabaseFromAssets(this, overwrite = false)
 
@@ -69,57 +67,82 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
             { fileName -> resources.getIdentifier(fileName, "drawable", packageName) }
         )
 
-        // Populate game list with games.
-        val allGames = dbHelper.getAllGames()
+        // Get data from the database.
+        allGames = dbHelper.getAllGames()
+        categories = listOf(Category(0, "All")) + dbHelper.getAllCategories()
+
+        // Get UI elements.
+        val profileBtn = findViewById<ImageButton>(R.id.profile_btn)
+        val cartBtn = findViewById<ImageButton>(R.id.cart_btn)
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        val categorySpinner = findViewById<Spinner>(R.id.category_spinner)
+        val sortBySpinner = findViewById<Spinner>(R.id.sort_by_spinner)
+
+        profileBtn.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+
+        cartBtn.setOnClickListener {
+            val intent = Intent(this, CartActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Populate game list with games.
         recyclerView.layoutManager = GridLayoutManager(this, 2) // 2 columns
-        val gameAdapter = GameAdapter(allGames, this)
+        gameAdapter = GameAdapter(allGames, this)
         recyclerView.adapter = gameAdapter
 
-        // Populate category spinner with categories.
-        val categories = listOf(Category(0, "All")) + dbHelper.getAllCategories()
-        val categorySpinner = findViewById<Spinner>(R.id.category_spinner)
+        // Setup category spinner.
         val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         categorySpinner.adapter = categoryAdapter
         categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                val selectedCategory = categories[p2]
-                if (selectedCategory.id == 0) {
-                    gameAdapter.replaceGames(allGames)
-                } else {
-                    gameAdapter.replaceGames(allGames.filter { it.categoryId == selectedCategory.id })
-                }
+                selectedCategory = p2
+                updateGameList()
             }
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
 
-        // Populate sort by spinner with sort options.
-        val sortOptions = listOf("Featured", "Price: Low to High", "Price: High to Low")
-        val sortBySpinner = findViewById<Spinner>(R.id.sort_by_spinner)
+        // Setup sort by spinner.
         val sortByAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, sortOptions)
         sortByAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         sortBySpinner.adapter = sortByAdapter
         sortBySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                val selectedOption = sortOptions[p2]
-                val updatedGames = when (selectedOption) {
-                    "Price: Low to High" -> allGames.sortedBy { it.price }
-                    "Price: High to Low" -> allGames.sortedByDescending { it.price }
-                    else -> allGames
-                }
-                gameAdapter.replaceGames(updatedGames)
+                selectedSortOption = p2
+                updateGameList()
             }
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
+    }
+
+    private fun updateGameList() {
+        val selectedCategory = categories[selectedCategory]
+
+        // Filter games based on selected category.
+        val filteredGames = if (selectedCategory.id == 0) {
+            allGames
+        } else {
+            allGames.filter { it.categoryId == selectedCategory.id }
+        }
+
+        // Sort games based on selected sort option.
+        val sortedAndFilteredGames = when (selectedSortOption) {
+            1 -> filteredGames.sortedBy { it.price }
+            2 -> filteredGames.sortedByDescending { it.price }
+            else -> filteredGames
+        }
+
+        // Update the adapter with the new list of games.
+        gameAdapter.replaceGames(sortedAndFilteredGames)
     }
 
     override fun onResume() {
         super.onResume()
+
+        // Update cart notification count.
         val cart = dbHelper.getCart()
         val cartItemCount = cart?.items?.sumOf { it.quantity } ?: 0
         val cartNotification = findViewById<TextView>(R.id.notification_count)
@@ -136,7 +159,6 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         intent.putExtra("gamePrice", game.price)
         intent.putExtra("gameCategoryId", game.categoryId)
         intent.putExtra("gameImageResId", game.imageResId)
-        println(game.imageResId)
         startActivity(intent)
     }
 }
