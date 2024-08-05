@@ -2,6 +2,7 @@ package com.example.buttonmashers
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -66,6 +68,15 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
             this,
             { fileName -> resources.getIdentifier(fileName, "drawable", packageName) }
         )
+
+        // Request permissions for notifications.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                0
+            )
+        }
 
         // Get data from the database.
         allGames = dbHelper.getAllGames()
