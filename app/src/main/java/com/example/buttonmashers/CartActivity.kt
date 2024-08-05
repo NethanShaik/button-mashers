@@ -167,7 +167,7 @@ class OrderAdapter(
     private fun increaseQuantity(index: Int, gameQuantity: TextView, gamePrice: TextView) {
         val order = items[index]
 
-        if (order.quantity < 10) {
+        if (order.quantity < GameDatabaseHelper.MAX_QUANTITY) {
             order.quantity += 1
             updateOrderItem(order, gameQuantity, gamePrice)
         }

@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import kotlin.math.min
 
 class GameDatabaseHelper(
     context: Context,
@@ -13,6 +14,7 @@ class GameDatabaseHelper(
     companion object {
         private const val DB_NAME = "gamestore.db"
         private const val DB_VERSION = 1
+        const val MAX_QUANTITY = 10
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -156,7 +158,7 @@ class GameDatabaseHelper(
         if (itemCursor.moveToFirst()) {
             // Game is already in the cart, update the quantity.
             val existingQuantity = itemCursor.getInt(itemCursor.getColumnIndexOrThrow("quantity"))
-            val newQuantity = existingQuantity + quantity
+            val newQuantity = min(existingQuantity + quantity, MAX_QUANTITY) // Limit max quantity
             val values = ContentValues().apply {
                 put("quantity", newQuantity)
             }
@@ -265,7 +267,7 @@ class GameDatabaseHelper(
         val cartId = getCartId()
         if (cartId != null) {
             val values = ContentValues().apply {
-                put("quantity", newQuantity)
+                put("quantity", min(newQuantity, MAX_QUANTITY))
             }
             db.update(
                 "order_items",
