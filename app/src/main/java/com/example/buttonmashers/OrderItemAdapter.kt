@@ -20,7 +20,7 @@ class OrderItemAdapter(
         val orderItem = orderItems[position]
         holder.orderItemTitleTextView.text = orderItem.game.title
         holder.orderItemQuantityTextView.text = "Quantity: ${orderItem.quantity}"
-        holder.orderItemPriceTextView.text = "Price: $${orderItem.game.price * orderItem.quantity}"
+        holder.orderItemPriceTextView.text = "Price: $${String.format("%.2f", orderItem.game.price * orderItem.quantity)}"
         holder.orderItemImageView.setImageResource(orderItem.game.imageResId)
     }
 
