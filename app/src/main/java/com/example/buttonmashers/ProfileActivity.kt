@@ -15,6 +15,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -25,6 +26,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.textfield.TextInputEditText
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -60,8 +62,14 @@ class ProfileActivity : AppCompatActivity() {
         emailTextView.text = dbHelper.getProfile().email
 
         // Handle edit profile button click
+
         editProfileButton.setOnClickListener {
-            UserEditDialogFragment().show(supportFragmentManager, "profileDialog")
+            val dialog = UserEditDialogFragment()
+            val bundle = Bundle()
+            bundle.putString("name", nameTextView.text.toString())
+            bundle.putString("email", emailTextView.text.toString())
+            dialog.arguments = bundle
+            dialog.show(supportFragmentManager, "profileDialog")
         }
 
         // Setup Toolbar
@@ -130,8 +138,8 @@ class GameTitleAdapter(private val gameTitles: List<Game>, val dbHelper: GameDat
 }
 
 class UserEditDialogFragment : DialogFragment(R.layout.user_edit_fragment) {
-    private lateinit var editTextName: EditText
-    private lateinit var editTextEmail: EditText
+    private lateinit var editTextName: TextInputEditText
+    private lateinit var editTextEmail: TextInputEditText
     private lateinit var buttonSave: Button
     private lateinit var buttonCancel: Button
 
@@ -140,10 +148,27 @@ class UserEditDialogFragment : DialogFragment(R.layout.user_edit_fragment) {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.user_edit_fragment, container, false)
+
         editTextName = view.findViewById(R.id.editTextName)
         editTextEmail = view.findViewById(R.id.editTextEmail)
         buttonSave = view.findViewById(R.id.buttonSave)
         buttonCancel = view.findViewById(R.id.buttonCancel)
+
+        //grab values of name and email from profile activity
+        val name = arguments?.getString("name")
+        val email = arguments?.getString("email")
+        editTextName.setText(name)
+        editTextEmail.setText(email)
+
+        buttonSave.isEnabled = editTextName.text.toString().isNotEmpty() && editTextEmail.text.toString().isNotEmpty()
+
+        editTextName.addTextChangedListener {
+            buttonSave.isEnabled = editTextName.text.toString().isNotEmpty() && editTextEmail.text.toString().isNotEmpty()
+        }
+
+        editTextEmail.addTextChangedListener {
+            buttonSave.isEnabled = editTextName.text.toString().isNotEmpty() && editTextEmail.text.toString().isNotEmpty()
+        }
 
         buttonCancel.setOnClickListener {
             dismiss()  // Close the dialog on cancel
