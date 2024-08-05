@@ -50,8 +50,8 @@ class ItemActivity : AppCompatActivity() {
         }
 
         //Accessing Values from the main activity screen
-        textViewPrice.text = intent.getDoubleExtra("gamePrice",0.0).toString()
         val price = intent.getDoubleExtra("gamePrice",0.0)
+        updatePrice(price)
         textViewDescription.text = intent.getStringExtra("gameDescription")
         toolbar.title = intent.getStringExtra("gameTitle")
         textViewGameName.text = intent.getStringExtra("gameTitle")
