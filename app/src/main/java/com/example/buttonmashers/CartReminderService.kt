@@ -1,5 +1,6 @@
 package com.example.buttonmashers
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -13,13 +14,15 @@ import androidx.core.content.ContextCompat
 
 class CartReminderService : Service() {
     private val CHANNEL_ID = "cart_reminder_channel"
+    private val NOTIFICATION_ID = 1
 
     companion object {
-        fun startService(context: Context, message: String) {
+        fun startService(context: Context, itemCount: Int) {
             val startIntent = Intent(context, CartReminderService::class.java)
-            startIntent.putExtra("message", message)
+            startIntent.putExtra("itemCount", itemCount)
             ContextCompat.startForegroundService(context, startIntent)
         }
+
         fun stopService(context: Context) {
             val stopIntent = Intent(context, CartReminderService::class.java)
             context.stopService(stopIntent)
@@ -27,29 +30,36 @@ class CartReminderService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val message = intent?.getStringExtra("message")
+        // Get the item count from the intent
+        val itemCount = intent?.getIntExtra("itemCount", 0) ?: 0
+
+        // Create notification channel if necessary
         createNotificationChannel()
 
+        // Create and start the notification
+        val notification = createNotification(itemCount)
+        startForeground(NOTIFICATION_ID, notification)
+
+        return START_NOT_STICKY
+    }
+
+    override fun onBind(p0: Intent?): IBinder? {
+        return null
+    }
+
+    private fun createNotification(itemCount: Int): Notification {
         val notificationClickIntent = PendingIntent.getActivity(
             this,
             0,
             Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
-
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Don't forget to checkout!")
-            .setContentText(message)
+            .setContentText("You have ${itemCount} items in your cart.")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(notificationClickIntent)
             .build()
-
-        startForeground(1, notification)
-        return START_NOT_STICKY
-    }
-
-    override fun onBind(p0: Intent?): IBinder? {
-        return null
     }
 
     private fun createNotificationChannel() {
