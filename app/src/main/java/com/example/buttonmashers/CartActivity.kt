@@ -66,6 +66,19 @@ class CartActivity : AppCompatActivity(), OnCartItemsChangeListener {
         onCartItemsChanged(items)
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        // Update number of items in the cart reminder notification.
+        val cart = dbHelper.getCart()
+        val cartItemCount = cart?.items?.sumOf { it.quantity } ?: 0
+        if (cartItemCount == 0) {
+            CartReminderService.stopService(this)
+        } else {
+            CartReminderService.startService(this, cartItemCount)
+        }
+    }
+
     override fun onCartItemsChanged(updatedItems: List<OrderItem>) {
         // Show/hide empty cart message
         if (updatedItems.isEmpty()) {

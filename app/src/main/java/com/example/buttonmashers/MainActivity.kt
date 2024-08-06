@@ -154,11 +154,20 @@ class MainActivity : AppCompatActivity(), OnGameClickListener {
         super.onResume()
 
         // Update cart notification count.
-        val cart = dbHelper.getCart()
-        val cartItemCount = cart?.items?.sumOf { it.quantity } ?: 0
+        val cartItemCount = getCartItemCount()
         val cartNotification = findViewById<TextView>(R.id.notification_count)
         cartNotification.text = cartItemCount.toString()
         cartNotification.visibility = if (cartItemCount > 0) View.VISIBLE else View.GONE
+
+        // Start the cart reminder service if there are items in the cart.
+        if (cartItemCount > 0) {
+            CartReminderService.startService(this, cartItemCount)
+        }
+    }
+
+    private fun getCartItemCount(): Int {
+        val cart = dbHelper.getCart()
+        return cart?.items?.sumOf { it.quantity } ?: 0
     }
 
     override fun onGameClick(game: Game) {
