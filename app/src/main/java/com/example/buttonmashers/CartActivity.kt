@@ -1,5 +1,6 @@
 package com.example.buttonmashers
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -9,13 +10,14 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
 
 private lateinit var dbHelper: GameDatabaseHelper
 
@@ -59,11 +61,18 @@ class CartActivity : AppCompatActivity(), OnCartItemsChangeListener {
 
         checkoutButton.setOnClickListener {
             dbHelper.checkoutCart()
-            finish()
+            exitToMainActivity()
         }
 
         // Init UI on the first load
         onCartItemsChanged(items)
+    }
+
+    private fun exitToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        finish()
     }
 
     override fun onPause() {
