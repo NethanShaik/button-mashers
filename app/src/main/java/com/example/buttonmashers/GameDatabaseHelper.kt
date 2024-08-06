@@ -328,6 +328,18 @@ class GameDatabaseHelper(
         db.close()
     }
 
+    fun updateProfileImage(imagePath: String) {
+        println("Updating profile image to $imagePath")
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("image_path", imagePath)
+        }
+        val selection = "id =?"
+        val selectionArgs = arrayOf("1")
+        db.update("users", values, selection, selectionArgs)
+        db.close()
+    }
+
     fun getProfile(): User {
         val db = readableDatabase
         val cursor = db.query("users", null, null, null, null, null, null)
@@ -336,7 +348,8 @@ class GameDatabaseHelper(
             while (moveToNext()) {
                 val name = getString(getColumnIndexOrThrow("name"))
                 val email = getString(getColumnIndexOrThrow("email"))
-                user = User(1, name, email)
+                val imagePath = getString(getColumnIndexOrThrow("image_path"))
+                user = User(1, name, email, imagePath)
                 }
             close()
         }

@@ -20,26 +20,42 @@
         app:title="My Profile" />
 
     <!-- Profile Image -->
-    <ImageView
-        android:id="@+id/profileImageView"
+    <FrameLayout
+        android:id="@+id/profileContainer"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"
-        android:contentDescription="Profile Picture"
-        android:src="@drawable/user"
-        android:background="@drawable/circle_background"
-        android:scaleType="centerCrop"
-        android:clipToOutline="true"
-        android:layout_alignTop="@id/toolbar"
-        android:outlineProvider="background" />
+        android:layout_alignTop="@id/toolbar" >
+        <ImageView
+            android:id="@+id/profileImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Profile Picture"
+            android:src="@drawable/user"
+            android:background="@drawable/circle_background"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:outlineProvider="background" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/changeProfilePicButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:contentDescription="Edit Profile Picture"
+            android:scaleY="0.7"
+            android:scaleX="0.7"
+            android:src="@drawable/baseline_edit_24" />
+
+    </FrameLayout>
 
     <!-- Name TextView -->
     <TextView
         android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/profileImageView"
+        android:layout_below="@id/profileContainer"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:textColor="@color/text_color_primary"

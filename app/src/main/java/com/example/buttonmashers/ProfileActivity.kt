@@ -1,6 +1,9 @@
 package com.example.buttonmashers
 
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -12,6 +15,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -24,6 +28,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.textfield.TextInputEditText
@@ -52,6 +57,8 @@ class ProfileActivity : AppCompatActivity() {
         // Initialize views
         val nameTextView = findViewById<TextView>(R.id.nameTextView)
         val emailTextView = findViewById<TextView>(R.id.emailTextView)
+        val profilePic = findViewById<ImageView>(R.id.profileImageView)
+        val changeProfilePicButton = findViewById<FloatingActionButton>(R.id.changeProfilePicButton)
         val editProfileButton = findViewById<Button>(R.id.editProfileButton)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         val tabLayout: TabLayout = findViewById(R.id.tabLayout)
@@ -60,6 +67,15 @@ class ProfileActivity : AppCompatActivity() {
         // Set default profile info
         nameTextView.text = dbHelper.getProfile().name
         emailTextView.text = dbHelper.getProfile().email
+
+        val profileImageBase64 = dbHelper.getProfile().imagePath
+        if (profileImageBase64 != null) {
+            val decodedBytes = Base64.decode(profileImageBase64, Base64.DEFAULT)
+            val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+            profilePic.setImageBitmap(bitmap)
+        } else {
+            profilePic.setImageResource(R.drawable.user)
+        }
 
         // Handle edit profile button click
 
@@ -70,6 +86,22 @@ class ProfileActivity : AppCompatActivity() {
             bundle.putString("email", emailTextView.text.toString())
             dialog.arguments = bundle
             dialog.show(supportFragmentManager, "profileDialog")
+        }
+
+        val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->if (uri != null) {
+            profilePic.setImageURI(uri)
+
+            val inputStream = contentResolver.openInputStream(uri)
+            val imageBytes = inputStream?.readBytes()
+            val base64Image = android.util.Base64.encodeToString(imageBytes, android.util.Base64.DEFAULT)
+            inputStream?.close()
+
+            dbHelper.updateProfileImage(base64Image.toString())
+        }
+        }
+
+        changeProfilePicButton.setOnClickListener {
+            pickImageLauncher.launch("image/*")
         }
 
         // Setup Toolbar
