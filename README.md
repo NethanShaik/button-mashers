@@ -2,11 +2,11 @@ Final Project - Mobile Programming
 
 Name and Student ID:
 
-Abel Serracin - 1227614
-Aniruddha Chakravarty - 1211757
-Carlos Ordoñez - 1218022
-Nethan Shaik - 1230824
-Rustem Kakimov - 1220007
+1. Abel Serracin - 1227614
+2. Aniruddha Chakravarty - 1211757
+3. Carlos Ordoñez - 1218022
+4. Nethan Shaik - 1230824
+5. Rustem Kakimov - 1220007
 
 Introducing ButtonMashers, an online store to find the games you love!
 
